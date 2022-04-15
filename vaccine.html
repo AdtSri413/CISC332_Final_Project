@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <link rel="stylesheet" href="styles.css">
+    <head>
+        <title>
+            Covid Database
+        </title>
+        <div class="topnav">
+            <a href="covid.html">Home</a>
+            <a href="about.html">About</a>
+            <a class="active" href="vaccine.html">Record a Vaccination</a>
+            <a href="location.php">Find a Vaccination Location</a>
+            <a href="status.php">Search Vaccination Status</a>
+            <a href="employees.php">Show Employees</a>
+        </div>
+        <h1>
+            Record a Patient's Vaccination
+        </h1>  
+    </head>
+    <body>
+        <form action="processVaccine.php" method="post">
+            <p>Please Enter the Patient's OHIP Number:</p>
+            <input type="text" name="OHIP">
+            <input type="submit">
+        </form>
+    </body>
+</html>

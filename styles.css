@@ -1,0 +1,96 @@
+/* Navigation Bar CSS */
+.topnav {
+background-color: #333;
+overflow: hidden;
+}
+
+.topnav a {
+float: left;
+color: #f2f2f2;
+text-align: center;
+padding: 14px 16px;
+text-decoration: none;
+font-size: 17px;
+}
+
+.topnav a:hover {
+background-color: #ddd;
+color: black;
+}
+
+.topnav a.active {
+background-color: lavender;
+color: black;
+}
+
+/* Table CSS */
+table, th, td {
+    /* border: 1px solid black;
+    border-collapse: collapse; */
+    margin-bottom: 50px;
+    text-align: center;
+    padding: 10px;
+}
+
+tr:nth-child(even) {
+    background-color: rgb(241, 238, 238);
+}
+
+th, tr:hover {
+    background-color: lavender;
+}
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/*Text CSS*/
+html {
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+}
+
+#radio{
+    text-align: left;
+    display: inline-block;
+    margin: auto;
+    width:15%;
+}
+
+input[type="radio"]{
+    float: left;
+    margin-right: 3%;
+}
+
+p {
+    font-weight: bold;
+}
+
+ul {
+    display: inline-block;
+}
+  
+ul li {
+    text-align: left;
+}
+
+/* Image CSS */
+img {
+    min-width: 100%;
+    height: 300px;
+}
+
+/* #banner {
+    background-image: url(banner_purple.png);
+    background-position: right bottom, left top;
+    background-repeat: no-repeat, repeat;
+} */
+
+/* #bannerimage {
+    width: 100%;
+    background-image: "banner_purple.png";
+    height: 405px;
+    background-color: purple;
+    background-position: center;
+} */

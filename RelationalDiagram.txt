@@ -1,0 +1,212 @@
+drop database covidDB;
+create database covidDB;
+
+create table Patient(
+    PatientOHIP char(12) not null primary key,
+    PatientLastName varchar(40) not null,
+    PatientFirstName varchar(40) not null,
+    PatientMiddleName varchar(40),
+    PatientBirthday date not null);
+    
+create table Spouse(
+    SpouseOHIP char(12) not null primary key,
+    SpouseLastName varchar(40) not null,
+    SpouseFirstName varchar(40) not null,
+    SpouseMiddleName varchar(40),
+    SpousePhoneNum char(10) not null,
+    PatientOHIP char(12) not null,
+	foreign key (PatientOHIP) references Patient(PatientOHIP) on delete cascade on update cascade);
+    
+create table VaccinationSite(
+    VaxSiteName varchar(40) not null primary key,
+    VaxSiteStreetNum integer not null,
+    VaxSiteStreet varchar(40) not null,
+    VaxSiteCity varchar(40) not null,
+    VaxSiteProvince char(2) not null,
+    VaxSitePostalCode char(6) not null);
+    
+create table Company(
+    CompanyName enum("Pfizer", "Moderna", "Astrazeneca", "Johnson & Johnson") not null primary key,
+    CompanyStreetNum integer not null,
+    CompanyStreet varchar(40) not null,
+    CompanyCity varchar(40) not null,
+    CompanyProvState varchar(40),
+    CompanyCountry varchar(40) not null,
+    CompanyPostalZipCode varchar(40));
+    
+create table VaccineLot(
+    VaxLotID char(6) not null primary key,
+    VaxLotProdDate date not null,
+    VaxLotExpDate date not null,
+    VaxLotNumDoses integer not null,
+    CompanyName enum("Pfizer", "Moderna", "Astrazeneca", "Johnson & Johnson"),
+	VaxSiteName varchar(40),
+	foreign key (CompanyName) references Company(CompanyName) on delete restrict on update cascade,
+	foreign key (VaxSiteName) references VaccinationSite(VaxSiteName) on delete set null on update cascade);
+    
+create table Nurse(
+    NurseID varchar(20) not null primary key,
+    NurseLastName varchar(40) not null,
+    NurseFirstName varchar(40) not null,
+    NurseMiddleName varchar(40));
+    
+create table MedicalPractice(
+    MedPracName varchar(40) not null primary key,
+    MedPracPhoneNum char(10) not null);
+
+create table Doctor(
+    DoctorID varchar(20) not null primary key,
+    DoctorLastName varchar(40) not null,
+    DoctorFirstName varchar(40) not null,
+    DoctorMiddleName varchar(40),
+	MedPracName varchar(40) not null,
+	foreign key (MedPracName) references MedicalPractice(MedPracName) on delete restrict on update cascade);
+    
+create table Vaccination(
+    VaxDate date not null,
+    VaxTime time not null,
+    PatientOHIP char(12) not null,
+    VaxLotID char(6) not null,
+    VaxSiteName varchar(40) not null,
+	foreign key (PatientOHIP) references Patient(PatientOHIP) on delete restrict on update cascade,
+	foreign key (VaxLotID) references VaccineLot(VaxLotID) on delete restrict on update cascade,
+	foreign key (VaxSiteName) references VaccinationSite(VaxSiteName) on delete restrict on update cascade);
+    
+create table EmploysNurse(
+    VaxSiteName varchar(40) not null,
+    NurseID varchar(20) not null,
+    foreign key (VaxSiteName) references VaccinationSite(VaxSiteName) on delete cascade on update cascade,
+    foreign key (NurseID) references Nurse(NurseID) on delete cascade on update cascade);
+    
+create table EmploysDoctor(
+    VaxSiteName varchar(40) not null,
+    DoctorID varchar(20) not null,
+    foreign key (VaxSiteName) references VaccinationSite(VaxSiteName) on delete cascade on update cascade,
+    foreign key (DoctorID) references Doctor(DoctorID) on delete cascade on update cascade);
+
+create table NurseCredentials(
+    NurseID varchar(20) not null,
+    NurseCredential varchar(40) not null,
+	foreign key (NurseID) references Nurse(NurseID) on delete cascade on update cascade);
+    
+create table DoctorCredentials(
+    DoctorID varchar(20) not null,
+    DoctorCredential varchar(40) not null,
+    foreign key (DoctorID) references Doctor(DoctorID) on delete cascade on update cascade);
+
+
+insert into Patient values
+("1234567890AB", "Doe", "John", null, '1980-01-01'),
+("0987654321ZY", "Doe", "Jane", "Catherine", '1982-02-25'),
+("5927593727FH", "Smith", "John", null, '1994-11-12'),
+("2017593726WK", "Green", "Eric", null, '1988-12-19'),
+("6937860384GK", "Fitzgerald", "Olivia", "Emily", '2002-07-23'),
+("4927195783SJ", "Patel", "Anisha", null, '1995-08-08'),
+("2057302740DM", "Goodman", "Ethan", null, '1972-06-20'),
+("5038959483HL", "Zhang", "Isabel", null, '1961-03-14');
+
+insert into Spouse values
+("0987654321ZY", "Doe", "Jane", "Catherine", '6473395829', "1234567890AB"),
+("1234567890AB", "Doe", "John", null, '6473952749', "0987654321ZY"),
+("5937284928GO", "Smith", "Alyssa", null, '6139583748', "5927593727FH"),
+("5048395721HP", "Schmidt", "Amanda", "Jane", '3439284927', "2017593726WK"),
+("1958395739WF", "Goodman", "Lucas", "Albert", '5553463443', "2057302740DM"),
+("9569238458PN", "Zhang", "Kevin", null, '6473847283', "5038959483HL");
+
+insert into VaccinationSite values
+("Applewood Clinic", 95, "Applewood Road", "Richmond", "ON", "K3K6G2"),
+("Canadian Tire Centre", 29, "Terry Fox Road", "Ottawa", "ON", "K2K5E3"),
+("St. Patrick High School", 20, "Colonel By Road", "Winnipeg", "MB", "K3V3G9"),
+("Eaton Centre", 349, "March Drive", "Ottawa", "ON", "K1L6F8"),
+("Make Believe Clinic", 123, "Fake Street", "Vancouver", "BC", "K1S2H3"),
+("Ceaderview Clinic", 872, "Ceaderview Avenue", "Calgary", "AB", "K6F3H5");
+
+insert into Company values
+("Pfizer", 235, "East 42nd Street", "New York City", "New York", "United States of America", "10017"),
+("Moderna", 200, "Technology Square", "Cambridge", "Massachusetts", "United States of America", "02139"),
+("Astrazeneca", 1, "Francis Crick Avenue", "Cambridge", null, "United Kingdom", null),
+("Johnson & Johnson", 1, "Johnson & Johnson Plaza", "New Brunswick", "New Jersey", "United States of America", 08933);
+
+insert into VaccineLot values
+("AB1234", '2021-09-22', '2025-09-22', 1000, "Pfizer", "Applewood Clinic"),
+("EG2467", '2021-12-13', '2025-12-13', 2000, "Moderna", "Canadian Tire Centre"),
+("NG9483", '2022-01-09', '2026-01-09', 1200, "Pfizer", "St. Patrick High School"),
+("DW3870", '2021-07-28', '2025-07-28', 2500, "Astrazeneca", "Eaton Centre"),
+("KU1305", '2021-06-03', '2025-06-03', 1500, "Moderna", "Make Believe Clinic"),
+("SF4852", '2021-11-15', '2025-11-15', 800, "Johnson & Johnson", "Ceaderview Clinic");
+
+insert into Nurse values
+("N1234567890", "Joy", "Nurse", null),
+("N4948998498", "Ratched", "Nurse", null),
+("N2847583930", "Espinoza", "Clara", null),
+("N3495338292", "Perkins", "Ann", null),
+("N3947282834", "Pomfrey", "Poppy", null),
+("N0786985981", "Yet", "Another", "Nurse");
+
+insert into MedicalPractice values
+("Grey Sloan Memorial Hospital", "5559598492"),
+("Kingston General Hospital", "6139573762"),
+("Ottawa Carleton Hospital", "6133285729"),
+("Toronto General Hospital", "6472058275"),
+("Vancouver General Hospital", "2508372844"),
+("Yet Another Hospital", "1234567890");
+
+insert into Doctor values
+("D9384823934", "Yet", "Another", "doctor", "Yet Another Hospital"),
+("D8375738947", "Grey", "Meredith", null, "Grey Sloan Memorial Hospital"),
+("D8237482943", "Franklin", "Geoffrey", "Edward", "Kingston General Hospital"),
+("D9289471057", "Wilder", "Oscar", "Eric", "Ottawa Carleton Hospital"),
+("D9276573824", "Perez", "Emily", "Maria", "Toronto General Hospital"),
+("D3848694956", "Kim", "Daniel", null, "Vancouver General Hospital");
+
+insert into Vaccination values
+('2022-03-21', '14:30:00', "1234567890AB", "DW3870", "Ceaderview Clinic"),
+('2022-02-18', '11:15:00', "0987654321ZY", "SF4852", "Eaton Centre"),
+('2022-04-04', '15:00:00', "5927593727FH", "AB1234", "Applewood Clinic"),
+('2022-05-02', '14:00:00', "2017593726WK", "NG9483", "St. Patrick High School"),
+('2022-04-15', '12:30:00', "6937860384GK", "KU1305", "Make Believe Clinic"),
+('2022-03-02', '13:45:00', "4927195783SJ", "EG2467", "Canadian Tire Centre"),
+('2022-03-19', '10:30:00', "2057302740DM", "DW3870", "Applewood Clinic"),
+('2022-02-11', '11:00:00', "5038959483HL", "KU1305", "Make Believe Clinic");
+
+insert into EmploysNurse values
+("Ceaderview Clinic", "N1234567890"),
+("Canadian Tire Centre", "N4948998498"),
+("St. Patrick High School", "N2847583930"),
+("Applewood Clinic", "N3495338292"),
+("Canadian Tire Centre", "N3947282834"),
+("Eaton Centre", "N0786985981"),
+("Make Believe Clinic", "N2847583930"),
+("Eaton Centre", "N3495338292");
+
+insert into EmploysDoctor values
+("Ceaderview Clinic", "D9384823934"),
+("Canadian Tire Centre", "D8375738947"),
+("St. Patrick High School", "D8237482943"),
+("Applewood Clinic", "D9289471057"),
+("Eaton Centre", "D9384823934"),
+("Make Believe Clinic", "D3848694956");
+
+insert into NurseCredentials values
+("N1234567890", "Bedside Manner Training"),
+("N1234567890", "Head Nurse Certification"),
+("N1234567890", "Mental Health Assistance Training"),
+("N4948998498", "Bedside Manner Training"),
+("N4948998498", "Mental Health Assistance Training"),
+("N2847583930", "Bedside Manner Training"),
+("N3495338292", "Bedside Manner Training"),
+("N3947282834", "Bedside Manner Training"),
+("N0786985981", "Bedside Manner Training"),
+("N0786985981", "Head Nurse Certification"),
+("N0786985981", "Mental Health Assistance Training");
+
+insert into DoctorCredentials values
+("D9384823934", "Board Certification"),
+("D9384823934", "Grief Counseling Training"),
+("D8375738947", "Board Certification"),
+("D8237482943", "Board Certification"),
+("D8237482943", "Bedside Manner Training"),
+("D9289471057", "Board Certification"),
+("D9289471057", "Grief Counseling Training"),
+("D9276573824", "Board Certification"),
+("D3848694956", "Board Certification");
